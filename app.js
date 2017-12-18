@@ -1,24 +1,21 @@
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
+let express = require('express');
+let path = require('path');
+let favicon = require('serve-favicon');
+let logger = require('morgan');
+let cookieParser = require('cookie-parser');
+let bodyParser = require('body-parser');
 
-var index = require('./routes/index');
-var users = require('./routes/users');
-var login = require('./routes/login');
-var register = require('./routes/register');
-var shop = require('./routes/shop');
-var product = require('./routes/product');
+let index = require('./routes/index');
+let users = require('./routes/users');
+let login = require('./routes/login');
+let register = require('./routes/register');
+let shop = require('./routes/shop');
+let product = require('./routes/product');
+let cart = require('./routes/cart');
+let contacts = require('./routes/contacts');
 // require('./model/User');
-var app = express();
-var db = require("./db");
-// var mongoose = require('mongoose')
-
-// Bootstrap db connection
-// mongoose.createConnection('mongodb://localhost:27017/dilenta')
-
+let app = express();
+let db = require("./db");
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -38,6 +35,8 @@ app.use('/login', login);
 app.use('/register', register);
 app.use('/shop', shop);
 app.use('/product', product);
+app.use('/cart', cart);
+app.use('/contacts', contacts);
 
 
 // catch 404 and forward to error handler
@@ -56,7 +55,7 @@ app.use(function(err, req, res, next) {
   console.log("log: " + err.message);
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  res.render('error', {message: err.message});
 });
 
 db.connect("mongodb://localhost:27017/dilenta", function (err){

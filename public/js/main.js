@@ -514,7 +514,7 @@ function windowLoadInit() {
 
 		// sending form data to PHP server if fields are not empty
 		var request = $form.serialize();
-		var ajax = jQuery.post( "/login/authorize", request )
+		jQuery.post( "/login/authorize", request )
 		.done(function( data ) {
 			jQuery($form).find('[type="submit"]').attr('disabled', false).parent().append('<span class="contact-form-respond highlight">'+data+'</span>');
 			//cleaning form
@@ -531,11 +531,46 @@ function windowLoadInit() {
 
 	jQuery("#btn_login").click(function () {
 
+        let email = jQuery('#email').val();
+        let password = jQuery('#password').val();
+        $.ajax({
+            type: "POST",
+            url: "login/authorize",
+            data: {
+                "email": email,
+                "password": password
+            },
+            statusCode: {
+                404: function(error) {
+                    alert(error.message);
+                    window.location.replace("http://localhost:3000");
+                },
+                401: function (error) {
+                    alert(error.message);
+                    window.location.replace("http://localhost:3000/login");
+                },
+				500: function (error) {
+                    alert(error.message);
+                    window.location.replace("http://localhost:3000/login");
+                }
+            },
+            success: function (response) {
+                let date = new Date(43200);
+                let expirationDateString = date.toUTCString();
+                let sessionId = response.sessionId;
+                $.cookie("username", email);
+                $.cookie("sessionId", sessionId);
+                $.cookie("expires", expirationDateString);
+                window.location.replace("http://localhost:3000");
+            },
+            dataType: 'json'
+        });
+
     });
 
 
 	jQuery("#product-button").click(function() {
-		var productId = jQuery("#product-button").data("productid");
+		let productId = jQuery("#product-button").data("productid");
 
 		// $.get("/product", {}, function(err, res) {
         //
@@ -637,8 +672,16 @@ function windowLoadInit() {
 	});
 
 	if (jQuery.cookie("sessionId") !== undefined && jQuery.cookie("username") !== undefined) {
+		var itemsCount = 0;
+		if ($.cookie('cart') !== undefined && $.cookie('cart') !== null) {
+			var items = JSON.parse($.cookie('cart'));
+			for (var i = 0; i < items.length; i++) {
+				itemsCount += parseInt(items[i].value);
+			}
+		}
 		var username = jQuery.cookie("username");
-        jQuery('#login-area').append("<p><a> " + username + " </a>&nbsp&nbsp|&nbsp&nbsp <a id=\"logout\" href=\"#\"> Logout </a></h6></p>");
+		jQuery('#login-area').append("<p><a> " + username + " </a>&nbsp&nbsp|&nbsp&nbsp <a id=\"logout\" href=\"#\"> Logout </a></h6></p>");
+        jQuery('#login-area').append("<p id='btn-cart'><a href='/cart'><span><i class='rt-icon2-basket leftmargin_10'></i></span> Cart <span> - </span> <span id=\"itemsCount\">" + itemsCount + " items </span></a></p> ");
 	} else {
 		jQuery('#login-area').append("<h6> <a href=\"/login\"> Sign In </a> &nbsp&nbsp|&nbsp&nbsp <a href=\"/register\"> Sign Up </a></h6>");
 	}
@@ -647,8 +690,79 @@ function windowLoadInit() {
         $.removeCookie('sessionId', { path: '/' });
         $.removeCookie('username', { path: '/' });
         $.removeCookie('expires', { path: '/' });
+        $.removeCookie('cart', { path: '/' });
         window.location.replace("http://localhost:3000");
     });
+
+	jQuery('#btn-cart').click(function() {
+
+        if ($.cookie('cart') !== undefined && $.cookie('cart') !== null) {
+            $.ajax({
+                type: "POST",
+                url: "/cart",
+                data: {
+                    cardContent: $.cookie('cart')
+                },
+                // statusCode: {
+                //     500: function(error) {
+                //         alert(error.message);
+                //         window.location.replace("http://localhost:3000");
+                //     },
+                //     409: function () {
+                //         alert("Such email is already exists");
+                //         window.location.replace("http://localhost:3000/register");
+                //     }
+                // },
+                dataType: 'json'
+            });
+		} else {
+        	window.location.replace("http://localhost:3000/shop")
+		}
+
+	});
+
+    jQuery('#checkout').click(function() {
+
+    });
+
+
+    jQuery('#add-cart-button').click(function() {
+		var productId = $('body').attr('productid');
+		var qty = $('#product_quantity').val();
+		var json = $.cookie('cart');
+		if (json !== undefined && json !== null) {
+            var products = JSON.parse(json);
+			var found = false;
+            for (var i = 0; i < products.length; i++) {
+                if (products[i] !== undefined) {
+                    if (products[i].id === productId) {
+                        products[i].value = parseInt(products[i].value) + parseInt(qty);
+                        qty = products[i].value;
+                    	found = true;
+                    	break;
+					}
+                }
+            }
+			if (!found) {
+            	var item = new CartItem(productId, qty);
+            	products.push(item);
+			}
+			$.cookie('cart', JSON.stringify(products), { path: '/' });
+		} else {
+			products = [];
+            var item = new CartItem(productId, qty);
+            products.push(item);
+            $.cookie('cart', JSON.stringify(products), { path: '/' });
+		}
+		$('#itemsCount').html(qty + " items");
+	});
+
+	var CartItem = class CartItem {
+		constructor(id, value) {
+			this.id = id;
+			this.value = value;
+		}
+	}
 
 	var sending = false;
 	jQuery('#register_now').click(function() {
@@ -791,7 +905,7 @@ function windowLoadInit() {
 	});
 
 	// init timetable
-	var $timetable = jQuery('#timetable');
+	let $timetable = jQuery('#timetable');
 	if ($timetable.length) {
 		// bind filter click
 		jQuery('#timetable_filter').on( 'click', 'a', function( e ) {
