@@ -1,23 +1,29 @@
 var db = require('../db');
 
-exports.get = function(callback)
+exports.get = async function(callback)
 {
-    db.get().collection('product_details').find().toArray(function(err, doc) {
+    await db.get().collection('product_details').find().toArray(function(err, doc) {
         callback(err, doc)
     });
 };
 
-exports.findById = function (id, callback)
+exports.findById = async function (id, callback)
 {
-    db.get().collection('product_details').findOne( {productId:id}, function(err, res) { callback(err, res)});
+    await db.get().collection('product_details').findOne( {productId:id}, function(err, res) { callback(err, res)});
 };
 
-exports.create = function (task, callback)
+exports.create = async function (task, callback)
 {
-    db.get().collection('product_details').insert(task, function(err, res) {callback(err, res)});
+    await db.get().collection('product_details').insert(task, function(err, res) {callback(err, res)});
 };
 
-exports.delete = function (id, callback)
+exports.delete = async function (id, callback)
 {
-    db.get().collection('product_details').deleteOne({_id:id}, function(err, res) {callback(err, res)});
+    await db.get().collection('product_details').deleteOne({_id:id}, function(err, res) {callback(err, res)});
+};
+
+
+exports.findByArrayId = async function (array, callback)
+{
+    await db.get().collection('product_details').find({productId: {$in: array }}).toArray(function(err, res) {callback(err, res)});
 };
