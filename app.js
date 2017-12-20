@@ -13,6 +13,7 @@ let shop = require('./routes/shop');
 let product = require('./routes/product');
 let cart = require('./routes/cart');
 let contacts = require('./routes/contacts');
+let checkout = require('./routes/checkout');
 // require('./model/User');
 let app = express();
 let db = require("./db");
@@ -37,6 +38,7 @@ app.use('/shop', shop);
 app.use('/product', product);
 app.use('/cart', cart);
 app.use('/contacts', contacts);
+app.use('/checkout', checkout);
 
 
 // catch 404 and forward to error handler
