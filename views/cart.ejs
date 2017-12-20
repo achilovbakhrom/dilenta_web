@@ -114,21 +114,22 @@
 									</thead>
 									<tbody>
 										<% for (var i = 0; i < products.length; i++) { %>
-											<tr class="cart_item">
+										<%= products[i].name %>
+											<tr class="cart_item" data-product-id = "<%=products[i].id%>">
 												<td class="product-info">
 													<div class="media">
 														<div class="media-left"> <a href="product.ejs">
-																<img class="media-object cart-product-image" src="<%=products[i].product.image%>" alt="" >
+																<img class="media-object cart-product-image" src="<%=products[i].image%>" alt="" >
 															</a> </div>
 														<div class="media-body">
-															<h4 class="media-heading"> <a href="product.ejs"><%=products[i].product.name%></a> </h4> </div>
+															<h4 class="media-heading"> <a href="product.ejs"><%=products[i].name%></a> </h4> </div>
 													</div>
 												</td>
-												<td class="product-price"> <span class="currencies">$</span><span class="amount"><%=products[i].product.price_amount%></span> </td>
+												<td class="product-price"> <span class="currencies">$</span><span class="amount"><%=products[i].price%></span> </td>
 												<td class="product-quantity">
 													<div class="quantity"> <input type="button" value="-" class="minus"> <input type="number" step="1" min="0" name="product_quantity" value="<%=products[i].qty%>" title="Qty" class="form-control"> <input type="button" value="+" class="plus"> </div>
 												</td>
-												<td class="product-subtotal"> <span class="currencies">$</span><span class="amount"><%=parseFloat(products[i].qty) * parseFloat(products[i].product.price_amount)%></span> </td>
+												<td class="product-subtotal"> <span class="currencies">$</span><span class="amount"><%=products[i].total%></span> </td>
 												<td class="product-remove"> <a href="#" class="remove fontsize_20" title="Remove this item">
 														<i class="fa fa-trash-o"></i>
 													</a> </td>
@@ -145,7 +146,7 @@
 										<tbody>
 											<tr class="cart-subtotal">
 												<td>Cart Subtotal</td>
-												<td><span class="currencies">$</span><span class="amount"><%=total%></span> </td>
+												<td><span class="currencies">$</span><span id="first_total" class="amount"><%=total%></span> </td>
 											</tr>
 											<tr class="shipping">
 												<td>Shipping and Handling</td>
@@ -153,7 +154,7 @@
 											</tr>
 											<tr class="order-total">
 												<td class="grey">Order Total</td>
-												<td><strong class="grey"><span class="currencies">$</span><span class="amount"><%=total%></span> </strong> </td>
+												<td><strong class="grey"><span class="currencies">$</span><span id="second_total" class="amount"><%=total%></span> </strong> </td>
 											</tr>
 										</tbody>
 									</table>

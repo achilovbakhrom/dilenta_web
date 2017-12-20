@@ -21,28 +21,36 @@ router.get('/', function(req, res, next) {
                 next(err);
                 return;
             }
-            let productDetails = [];
             var total = 0.0;
+            let productsForFrontEnd = [];
             for (var i = 0; i < result.length; i++) {
+
                 for (var j = 0; j < products.length; j++) {
                     if (result[i].productId === products[j].id) {
-                        var prodDetail = new ProductDetailsQty(result[i], products[j].value);
-                        productDetails.push(prodDetail);
                         total = total + parseFloat(result[i].price_amount) * parseFloat(products[j].value);
+
+                        let tempTotal = parseFloat(products[j].value) * parseFloat(result[j].price_amount);
+                        let product = new ProductToCookie(result[i].productId, result[i].image, result[i].name, result[i].price_amount, products[j].value, tempTotal)
+                        productsForFrontEnd.push(product);
                     }
                 }
             }
-            res.render('cart', {products: productDetails, total: total});
+            res.cookie('cart_products', JSON.stringify(productsForFrontEnd));
+            res.render('cart', {products: productsForFrontEnd, total: total});
         });
-
     }
 });
 
-var ProductDetailsQty = class ProductDetailsQty {
-    constructor(product, qty) {
-        this.product = product;
+let ProductToCookie = class ProductToCookie {
+    constructor(id, image, name, price, qty, total) {
+        this.id = id;
+        this.image = image;
+        this.name = name;
+        this.price = price;
         this.qty = qty;
+        this.total = total;
     }
-}
+};
+
 
 module.exports = router;
