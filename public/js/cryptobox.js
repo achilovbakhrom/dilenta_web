@@ -220,7 +220,9 @@ function cryptobox_update_page(data, ext)
 
 
 
-
+function cryptobox_hash(boxID, coinName,) {
+    
+}
 
 
 function cryptobox_show(boxID, coinName, public_key, amount, amountUSD, period, language, iframeID, userID, userFormat, orderID, cookieName, webdev_key, hash, width, height)

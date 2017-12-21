@@ -725,6 +725,9 @@ function windowLoadInit() {
     jQuery('#checkout').click(function() {
 
     });
+    jQuery('#place_order').click(function() {
+
+    });
 
 
     jQuery('#add-cart-button').click(function() {
@@ -990,7 +993,6 @@ function windowLoadInit() {
                 price = cartProducts[i].price;
             }
         }
-        $.cookie('cart_products', JSON.stringify(cartProducts), { path: '/' });
 
         var cart = JSON.parse($.cookie('cart'));
         var qty = -1;
@@ -1003,15 +1005,18 @@ function windowLoadInit() {
         }
         $('#itemsCount').text(itemsTotal + ' items');
 
-		$.cookie('cart', JSON.stringify(cart), { path: '/' });
-		if (qty !== -1 && qty !== -1) {
+		if (qty !== -1) {
 	        jQuery(this).parent().parent().parent().find('.amount')[1].innerText = parseFloat(price) * parseFloat(qty);
         }
 		var totalSum = 0;
 		for (var i = 0; i < cartProducts.length; i++) {
 			totalSum += parseFloat(cartProducts[i].price) * parseFloat(cartProducts[i].qty);
 		}
-
+		console.log(totalSum);
+		cartProducts.total = totalSum;
+		cart.total = totalSum;
+        $.cookie('cart_products', JSON.stringify(cartProducts), { path: '/' });
+        $.cookie('cart', JSON.stringify(cart), { path: '/' });
 		$('#first_total').text(totalSum);
 		$('#second_total').text(totalSum);
 
