@@ -726,6 +726,10 @@ function windowLoadInit() {
 
     });
     jQuery('#place_order').click(function() {
+        var formData = {
+            firstName: $('input[name=billing_firstname]').val(),
+            sec
+        }
 
     });
 
